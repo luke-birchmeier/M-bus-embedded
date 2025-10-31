@@ -3,18 +3,22 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-const char *ssid = "Ari's iPhone";
-const char *password = "stumble guys";
+const char *ssid = "Henrys Phone";
+const char *password = "Password";
 
 const char *url = "https://mbus.ltp.umich.edu/bustime/api/v3/getpredictions?rt=BB&stpid=N411,N410&key=PVEAKStQa5ys9D4xcFDzxRz4W&format=json&top=10";
 
 void setup()
 {
   Serial.begin(115200);
-  delay(1000);
+  delay(10000);
 
   // Connect to Wi-Fi
-  Serial.println("Connecting to WiFi...");
+  Serial.println();
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
   WiFi.begin(ssid, password);
 
   int retries = 0;
@@ -35,6 +39,20 @@ void setup()
   else
   {
     Serial.println("❌ Failed to connect to WiFi");
+    int16_t results = WiFi.scanNetworks(false, true, false, 1000, 0, nullptr, nullptr);
+
+    for (int i = 0; i < results; i++)
+    {
+      String ssid;
+      uint8_t encType;
+      int32_t rssi;
+      uint8_t *bssid;
+      int32_t channel;
+      WiFi.getNetworkInfo(i, ssid, encType, rssi, bssid, channel);
+
+      Serial.printf("%s %u %d %u %d\n", ssid, encType, rssi, bssid, channel);
+    }
+    Serial.printf("Finished %d\n", results);
     return;
   }
 
